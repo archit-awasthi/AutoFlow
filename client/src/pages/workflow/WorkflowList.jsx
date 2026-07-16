@@ -2,7 +2,9 @@ import { useEffect, useState } from "react";
 import api from "../../services/api";
 import CreateWorkflowModal from "../../components/CreateWorkflowModal";
 
-export default function WorkflowList() {
+export default function WorkflowList({
+  onOpenWorkflow,
+}) {
   const [workflows, setWorkflows] = useState([]);
 
   const fetchWorkflows = async () => {
@@ -38,9 +40,10 @@ export default function WorkflowList() {
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {workflows.map((workflow) => (
             <div
-              key={workflow._id}
-              className="bg-slate-900 border border-slate-800 rounded-xl p-5"
-            >
+                key={workflow._id}
+                onClick={() => onOpenWorkflow(workflow)}
+                className="bg-slate-900 border border-slate-800 rounded-xl p-5 cursor-pointer hover:border-cyan-500 transition"
+              >
               <h3 className="text-xl font-semibold text-cyan-400">
                 {workflow.name}
               </h3>

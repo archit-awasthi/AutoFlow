@@ -1,5 +1,10 @@
 const Workflow = require("../models/Workflow");
-
+const {
+  executeWorkflow,
+} = require("../services/executionService");
+const {
+  generateWorkflow,
+} = require("../services/geminiService");
 // ================= CREATE =================
 
 const createWorkflow = async (req, res) => {
@@ -97,10 +102,88 @@ const saveWorkflowFlow = async (req, res) => {
     });
   }
 };
+// ================= GET SINGLE WORKFLOW =================
+
+const getWorkflowById = async (req, res) => {
+  try {
+    const workflow = await Workflow.findOne({
+      _id: req.params.id,
+      owner: req.user.id,
+    });
+
+    if (!workflow) {
+      return res.status(404).json({
+        success: false,
+        message: "Workflow not found",
+      });
+    }
+
+    res.json({
+      success: true,
+      workflow,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+const runWorkflow = async (req, res) => {
+  try {
+    const workflow = await Workflow.findOne({
+      _id: req.params.id,
+      owner: req.user.id,
+    });
+
+    if (!workflow) {
+      return res.status(404).json({
+        success: false,
+        message: "Workflow not found",
+      });
+    }
+
+    const result = await executeWorkflow(workflow);
+
+    res.json(result);
+
+  } catch (err) {
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+
+  }
+};
+const generateWorkflowAI = async (req, res) => {
+  try {
+
+    const result = await generateWorkflow(
+      req.body.prompt
+    );
+
+    res.json({
+      success: true,
+      workflow: JSON.parse(result),
+    });
+
+  } catch (err) {
+
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+
+  }
+};
 
 module.exports = {
   createWorkflow,
   getMyWorkflows,
+  getWorkflowById,
   deleteWorkflow,
   saveWorkflowFlow,
+  runWorkflow,
+  generateWorkflowAI,
 };

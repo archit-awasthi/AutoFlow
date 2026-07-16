@@ -8,18 +8,17 @@ export default function Dashboard() {
   const { user, logout } = useAuth();
 
   const [showBuilder, setShowBuilder] = useState(false);
+  const [selectedWorkflow, setSelectedWorkflow] = useState(null);
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
-
+      {/* Navbar */}
       <nav className="h-16 border-b border-slate-800 flex items-center justify-between px-8">
-
         <h1 className="text-2xl font-bold text-cyan-400">
           AutoFlow
         </h1>
 
         <div className="flex items-center gap-5">
-
           <span>{user?.name}</span>
 
           <button
@@ -35,13 +34,11 @@ export default function Dashboard() {
           >
             Logout
           </button>
-
         </div>
-
       </nav>
 
+      {/* Content */}
       <div className="p-10">
-
         {!showBuilder ? (
           <>
             <h2 className="text-4xl font-bold">
@@ -52,7 +49,12 @@ export default function Dashboard() {
               Build, execute and manage browser workflows.
             </p>
 
-            <WorkflowList />
+            <WorkflowList
+              onOpenWorkflow={(workflow) => {
+                setSelectedWorkflow(workflow);
+                setShowBuilder(true);
+              }}
+            />
           </>
         ) : (
           <>
@@ -60,16 +62,18 @@ export default function Dashboard() {
               Workflow Builder
             </h2>
 
-            <p className="text-slate-400">
+            <p className="text-slate-400 mb-6">
               Design your browser automation visually.
             </p>
 
-            <WorkflowBuilder />
+            <WorkflowBuilder
+              workflowId={selectedWorkflow?._id}
+              nodesData={selectedWorkflow?.nodes}
+              edgesData={selectedWorkflow?.edges}
+            />
           </>
         )}
-
       </div>
-
     </div>
   );
 }

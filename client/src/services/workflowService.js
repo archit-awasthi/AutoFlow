@@ -5,6 +5,11 @@ export const getWorkflows = async () => {
   return res.data.workflows;
 };
 
+export const getWorkflow = async (id) => {
+  const res = await api.get(`/workflows/${id}`);
+  return res.data.workflow;
+};
+
 export const createWorkflow = async (data) => {
   const res = await api.post("/workflows", data);
   return res.data.workflow;

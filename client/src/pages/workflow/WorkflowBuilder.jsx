@@ -1,4 +1,5 @@
-import { useCallback } from "react";
+import { saveFlow } from "../../services/workflowService";
+import { useCallback, useEffect } from "react";
 
 import ReactFlow, {
   Background,
@@ -22,7 +23,11 @@ const initialNodes = [
 
 const initialEdges = [];
 
-export default function WorkflowBuilder({ nodesData, edgesData }) {
+export default function WorkflowBuilder({
+  workflowId,
+  nodesData,
+  edgesData,
+}) {
   const [nodes, setNodes, onNodesChange] = useNodesState(
     nodesData?.length ? nodesData : initialNodes
   );
@@ -30,6 +35,15 @@ export default function WorkflowBuilder({ nodesData, edgesData }) {
   const [edges, setEdges, onEdgesChange] = useEdgesState(
     edgesData?.length ? edgesData : initialEdges
   );
+  useEffect(() => {
+    if (nodesData && nodesData.length > 0) {
+      setNodes(nodesData);
+    }
+
+    if (edgesData && edgesData.length > 0) {
+      setEdges(edgesData);
+    }
+}, [nodesData, edgesData]);
 
   const onConnect = useCallback(
     (params) => setEdges((eds) => addEdge(params, eds)),
@@ -55,6 +69,26 @@ export default function WorkflowBuilder({ nodesData, edgesData }) {
     return nds.slice(0, -1);
   });
   };
+  const handleSave = async () => {
+  if (!workflowId) {
+    alert("Please open a workflow first.");
+    return;
+  }
+
+  try {
+    await saveFlow(
+      workflowId,
+      nodes,
+      edges
+    );
+
+    alert("Workflow saved successfully!");
+  } catch (err) {
+    console.error(err);
+
+    alert("Unable to save workflow.");
+  }
+};
 
   return (
     <>
@@ -93,6 +127,12 @@ export default function WorkflowBuilder({ nodesData, edgesData }) {
         >
           Delete Last
         </button>
+        <button
+          onClick={handleSave}
+          className="bg-green-600 hover:bg-green-700 px-4 py-2 rounded"
+        >
+          Save Workflow
+        </button>        
 
       </div>
 
