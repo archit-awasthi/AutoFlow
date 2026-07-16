@@ -4,16 +4,7 @@ import { useAuth } from "./context/AuthContext";
 
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
-
-function Dashboard() {
-  return (
-    <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
-      <h1 className="text-5xl font-bold text-cyan-400">
-        Welcome to AutoFlow 🚀
-      </h1>
-    </div>
-  );
-}
+import Dashboard from "./pages/dashboard/Dashboard";
 
 function ProtectedRoute({ children }) {
   const { isAuthenticated } = useAuth();
