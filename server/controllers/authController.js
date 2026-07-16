@@ -6,11 +6,11 @@ const generateToken = (id, role) => {
   return jwt.sign(
     { id, role },
     process.env.JWT_SECRET,
-    {
-      expiresIn: "7d",
-    }
+    { expiresIn: "7d" }
   );
 };
+
+// ================= REGISTER =================
 
 const register = async (req, res) => {
   try {
@@ -42,7 +42,7 @@ const register = async (req, res) => {
 
     const token = generateToken(user._id, user.role);
 
-    return res.status(201).json({
+    res.status(201).json({
       success: true,
       message: "Registration successful",
       token,
@@ -53,14 +53,64 @@ const register = async (req, res) => {
         role: user.role,
       },
     });
-  } catch (error) {
-    return res.status(500).json({
+  } catch (err) {
+    res.status(500).json({
       success: false,
-      message: error.message,
+      message: err.message,
+    });
+  }
+};
+
+// ================= LOGIN =================
+
+const login = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and Password required",
+      });
+    }
+
+    const user = await User.findOne({ email }).select("+password");
+
+    if (!user) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid Credentials",
+      });
+    }
+
+    const matched = await bcrypt.compare(password, user.password);
+
+    if (!matched) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid Credentials",
+      });
+    }
+
+    const token = generateToken(user._id, user.role);
+
+    user.password = undefined;
+
+    res.status(200).json({
+      success: true,
+      message: "Login Successful",
+      token,
+      user,
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
     });
   }
 };
 
 module.exports = {
   register,
+  login,
 };
