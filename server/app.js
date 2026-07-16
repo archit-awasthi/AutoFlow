@@ -2,6 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const cookieParser = require("cookie-parser");
 
+const authRoutes = require("./routes/authRoutes");
+
 const app = express();
 
 app.use(
@@ -21,5 +23,7 @@ app.get("/api/health", (req, res) => {
     message: "AutoFlow Backend is running 🚀",
   });
 });
+
+app.use("/api/auth", authRoutes);
 
 module.exports = app;
