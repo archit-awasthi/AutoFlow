@@ -1,27 +1,41 @@
-import { Routes, Route } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 
-function Home() {
+import { useAuth } from "./context/AuthContext";
+
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+
+function Dashboard() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-950 text-white">
-      <div className="text-center">
-        <h1 className="text-5xl font-bold text-cyan-400">AutoFlow</h1>
-        <p className="mt-4 text-lg text-slate-300">
-          Browser Automation Platform
-        </p>
-        <p className="mt-2 text-sm text-slate-500">
-          Module 1 Setup Successful 🚀
-        </p>
-      </div>
+      <h1 className="text-5xl font-bold text-cyan-400">
+        Welcome to AutoFlow 🚀
+      </h1>
     </div>
   );
 }
 
-function App() {
+function ProtectedRoute({ children }) {
+  const { isAuthenticated } = useAuth();
+
+  return isAuthenticated ? children : <Navigate to="/login" replace />;
+}
+
+export default function App() {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />
+      <Route path="/login" element={<Login />} />
+
+      <Route path="/register" element={<Register />} />
+
+      <Route
+        path="/"
+        element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        }
+      />
     </Routes>
   );
 }
-
-export default App;
