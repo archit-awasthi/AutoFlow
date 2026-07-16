@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../../services/api";
+import CreateWorkflowModal from "../../components/CreateWorkflowModal";
 
 export default function WorkflowList() {
   const [workflows, setWorkflows] = useState([]);
@@ -19,10 +20,18 @@ export default function WorkflowList() {
 
   return (
     <div className="mt-10">
-      <h2 className="text-2xl font-bold mb-6">My Workflows</h2>
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-2xl font-bold">
+          My Workflows
+        </h2>
+
+        <CreateWorkflowModal
+          onCreated={fetchWorkflows}
+        />
+      </div>
 
       {workflows.length === 0 ? (
-        <div className="bg-slate-900 p-8 rounded-xl text-center text-slate-400">
+        <div className="bg-slate-900 rounded-xl p-8 text-center text-slate-400">
           No workflows created yet.
         </div>
       ) : (
@@ -30,18 +39,18 @@ export default function WorkflowList() {
           {workflows.map((workflow) => (
             <div
               key={workflow._id}
-              className="bg-slate-900 rounded-xl p-5 border border-slate-800"
+              className="bg-slate-900 border border-slate-800 rounded-xl p-5"
             >
               <h3 className="text-xl font-semibold text-cyan-400">
                 {workflow.name}
               </h3>
 
-              <p className="text-slate-400 mt-2">
-                {workflow.description || "No description"}
+              <p className="mt-2 text-slate-400">
+                {workflow.description}
               </p>
 
-              <div className="mt-5 text-sm text-slate-500">
-                Status: {workflow.status}
+              <div className="mt-4 text-sm text-slate-500">
+                {workflow.status}
               </div>
             </div>
           ))}
