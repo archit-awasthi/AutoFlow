@@ -1,28 +1,20 @@
 const Workflow = require("../models/Workflow");
 
-// ================= CREATE WORKFLOW =================
+// ================= CREATE =================
 
 const createWorkflow = async (req, res) => {
   try {
-    const { name, description, steps } = req.body;
-
-    if (!name) {
-      return res.status(400).json({
-        success: false,
-        message: "Workflow name is required",
-      });
-    }
-
     const workflow = await Workflow.create({
-      name,
-      description,
-      steps: steps || [],
+      name: req.body.name,
+      description: req.body.description,
       owner: req.user.id,
+      steps: req.body.steps || [],
+      nodes: [],
+      edges: [],
     });
 
     res.status(201).json({
       success: true,
-      message: "Workflow created successfully",
       workflow,
     });
   } catch (err) {
@@ -33,15 +25,15 @@ const createWorkflow = async (req, res) => {
   }
 };
 
-// ================= GET MY WORKFLOWS =================
+// ================= GET =================
 
 const getMyWorkflows = async (req, res) => {
   try {
     const workflows = await Workflow.find({
       owner: req.user.id,
-    }).sort({ createdAt: -1 });
+    }).sort("-createdAt");
 
-    res.status(200).json({
+    res.json({
       success: true,
       count: workflows.length,
       workflows,
@@ -53,25 +45,50 @@ const getMyWorkflows = async (req, res) => {
     });
   }
 };
+
+// ================= DELETE =================
+
 const deleteWorkflow = async (req, res) => {
   try {
-    const workflow = await Workflow.findOne({
+    await Workflow.findOneAndDelete({
       _id: req.params.id,
       owner: req.user.id,
     });
 
-    if (!workflow) {
-      return res.status(404).json({
-        success: false,
-        message: "Workflow not found",
-      });
-    }
-
-    await workflow.deleteOne();
-
-    res.status(200).json({
+    res.json({
       success: true,
-      message: "Workflow deleted successfully",
+    });
+  } catch (err) {
+    res.status(500).json({
+      success: false,
+      message: err.message,
+    });
+  }
+};
+
+// ================= SAVE FLOW =================
+
+const saveWorkflowFlow = async (req, res) => {
+  try {
+    const { nodes, edges } = req.body;
+
+    const workflow = await Workflow.findOneAndUpdate(
+      {
+        _id: req.params.id,
+        owner: req.user.id,
+      },
+      {
+        nodes,
+        edges,
+      },
+      {
+        new: true,
+      }
+    );
+
+    res.json({
+      success: true,
+      workflow,
     });
   } catch (err) {
     res.status(500).json({
@@ -85,4 +102,5 @@ module.exports = {
   createWorkflow,
   getMyWorkflows,
   deleteWorkflow,
+  saveWorkflowFlow,
 };

@@ -5,7 +5,6 @@ const workflowSchema = new mongoose.Schema(
     name: {
       type: String,
       required: true,
-      trim: true,
     },
 
     description: {
@@ -19,17 +18,28 @@ const workflowSchema = new mongoose.Schema(
       required: true,
     },
 
+    status: {
+      type: String,
+      default: "ACTIVE",
+    },
+
     steps: [
       {
         type: Object,
       },
     ],
 
-    status: {
-      type: String,
-      enum: ["ACTIVE", "INACTIVE"],
-      default: "ACTIVE",
-    },
+    nodes: [
+      {
+        type: Object,
+      },
+    ],
+
+    edges: [
+      {
+        type: Object,
+      },
+    ],
   },
   {
     timestamps: true,

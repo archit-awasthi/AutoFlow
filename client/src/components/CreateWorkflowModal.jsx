@@ -1,5 +1,5 @@
 import { useState } from "react";
-import api from "../services/api";
+import { createWorkflow } from "../services/workflowService";
 
 export default function CreateWorkflowModal({ onCreated }) {
   const [open, setOpen] = useState(false);
@@ -13,7 +13,7 @@ export default function CreateWorkflowModal({ onCreated }) {
     e.preventDefault();
 
     try {
-      await api.post("/workflows", {
+      await createWorkflow({
         ...form,
         steps: [],
       });
