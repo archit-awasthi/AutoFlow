@@ -1,8 +1,9 @@
 import { useCallback } from "react";
+
 import ReactFlow, {
   Background,
   Controls,
- MiniMap,
+  MiniMap,
   addEdge,
   useNodesState,
   useEdgesState,
@@ -13,9 +14,9 @@ import "reactflow/dist/style.css";
 const initialNodes = [
   {
     id: "1",
-    position: { x: 100, y: 100 },
-    data: { label: "Start" },
     type: "input",
+    position: { x: 250, y: 50 },
+    data: { label: "Start" },
   },
 ];
 
@@ -35,20 +36,85 @@ export default function WorkflowBuilder({ nodesData, edgesData }) {
     []
   );
 
+  const addNode = (label) => {
+    const newNode = {
+      id: Date.now().toString(),
+      position: {
+        x: Math.random() * 500 + 100,
+        y: Math.random() * 300 + 100,
+      },
+      data: { label },
+    };
+
+    setNodes((nds) => [...nds, newNode]);
+  };
+  const deleteLastNode = () => {
+  setNodes((nds) => {
+    if (nds.length <= 1) return nds;
+
+    return nds.slice(0, -1);
+  });
+  };
+
   return (
-    <div style={{ width: "100%", height: "700px" }}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        fitView
+    <>
+      <div className="flex gap-3 mb-4">
+
+        <button
+          onClick={() => addNode("Open URL")}
+          className="bg-cyan-500 px-4 py-2 rounded"
+        >
+          Open URL
+        </button>
+
+        <button
+          onClick={() => addNode("Click")}
+          className="bg-cyan-500 px-4 py-2 rounded"
+        >
+          Click
+        </button>
+
+        <button
+          onClick={() => addNode("Type")}
+          className="bg-cyan-500 px-4 py-2 rounded"
+        >
+          Type
+        </button>
+        <button
+          onClick={() => addNode("Extract Text")}
+          className="bg-cyan-500 px-4 py-2 rounded"
+        >
+          Extract Text
+        </button>
+
+        <button
+          onClick={deleteLastNode}
+          className="bg-red-500 px-4 py-2 rounded"
+        >
+          Delete Last
+        </button>
+
+      </div>
+
+      <div
+        style={{
+          width: "100%",
+          height: "700px",
+        }}
       >
-        <MiniMap />
-        <Controls />
-        <Background />
-      </ReactFlow>
-    </div>
+        <ReactFlow
+          nodes={nodes}
+          edges={edges}
+          onNodesChange={onNodesChange}
+          onEdgesChange={onEdgesChange}
+          onConnect={onConnect}
+          fitView
+        >
+          <MiniMap />
+          <Controls />
+          <Background />
+        </ReactFlow>
+      </div>
+    </>
   );
 }
