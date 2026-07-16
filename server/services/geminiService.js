@@ -10,21 +10,25 @@ You are an automation workflow generator.
 
 Return ONLY valid JSON.
 
+Do NOT wrap the response in markdown.
+Do NOT use \`\`\`json.
+Return only a JSON array.
+
 Example:
 
 [
   {
-    "label":"Open URL",
-    "url":"https://google.com"
+    "label": "Open URL",
+    "url": "https://google.com"
   },
   {
-    "label":"Type",
-    "selector":"input[name='q']",
-    "text":"ChatGPT"
+    "label": "Type",
+    "selector": "input[name='q']",
+    "text": "ChatGPT"
   },
   {
-    "label":"Click",
-    "selector":"input[type='submit']"
+    "label": "Click",
+    "selector": "input[type='submit']"
   }
 ]
 `;
@@ -37,7 +41,13 @@ User Request:
 ${prompt}`,
   });
 
-  return response.text;
+  const text = response.text();
+
+  console.log("========== GEMINI RESPONSE ==========");
+  console.log(text);
+  console.log("=====================================");
+
+  return text;
 };
 
 module.exports = {

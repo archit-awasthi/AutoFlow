@@ -5,6 +5,7 @@ const {
 const {
   generateWorkflow,
 } = require("../services/geminiService");
+
 // ================= CREATE =================
 
 const createWorkflow = async (req, res) => {
@@ -102,6 +103,7 @@ const saveWorkflowFlow = async (req, res) => {
     });
   }
 };
+
 // ================= GET SINGLE WORKFLOW =================
 
 const getWorkflowById = async (req, res) => {
@@ -129,6 +131,9 @@ const getWorkflowById = async (req, res) => {
     });
   }
 };
+
+// ================= RUN WORKFLOW =================
+
 const runWorkflow = async (req, res) => {
   try {
     const workflow = await Workflow.findOne({
@@ -149,6 +154,8 @@ const runWorkflow = async (req, res) => {
 
   } catch (err) {
 
+    console.error(err);
+
     res.status(500).json({
       success: false,
       message: err.message,
@@ -156,19 +163,33 @@ const runWorkflow = async (req, res) => {
 
   }
 };
+
+// ================= GEMINI AI =================
+
 const generateWorkflowAI = async (req, res) => {
   try {
 
-    const result = await generateWorkflow(
-      req.body.prompt
-    );
+    const result = await generateWorkflow(req.body.prompt);
+
+    console.log("========== GEMINI RAW ==========");
+    console.log(result);
+    console.log("================================");
+
+    const cleaned = result
+      .replace(/```json/g, "")
+      .replace(/```/g, "")
+      .trim();
 
     res.json({
       success: true,
-      workflow: JSON.parse(result),
+      workflow: JSON.parse(cleaned),
     });
 
   } catch (err) {
+
+    console.log("========== GEMINI ERROR ==========");
+    console.error(err);
+    console.log("==================================");
 
     res.status(500).json({
       success: false,
